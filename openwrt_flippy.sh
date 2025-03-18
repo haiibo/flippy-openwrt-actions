@@ -48,13 +48,14 @@ PACKAGE_OPENWRT_6XY=("cm3" "e25" "photonicat" "r66s" "r68s" "rk3399")
 PACKAGE_SOC_VALUE="all"
 
 # Set the default packaged kernel download repository
-KERNEL_REPO_URL_VALUE="breakingbadboy/OpenWrt"
+KERNEL_REPO_URL_VALUE="ophub/kernel"
 # Set kernel tag: kernel_stable, kernel_rk3588, kernel_rk35xx
-KERNEL_TAGS=("stable" "rk3588" "rk35xx")
+KERNEL_TAGS=("stable" "flippy" "rk3588" "rk35xx")
 STABLE_KERNEL=("6.1.y" "6.12.y")
 RK3588_KERNEL=("5.10.y")
 RK35XX_KERNEL=("5.10.y")
 KERNEL_AUTO_LATEST_VALUE="true"
+KERNEL_USAGE_VALUE="flippy"
 
 # Set the working directory under /opt
 SELECT_PACKITPATH_VALUE="openwrt_packit"
@@ -105,7 +106,7 @@ HW_FLOWOFFLOAD_VALUE="0"
 SFE_FLOW_VALUE="1"
 ENABLE_WIFI_K504_VALUE="1"
 ENABLE_WIFI_K510_VALUE="1"
-DISTRIB_REVISION_VALUE="R$(date +%Y.%m.%d)"
+DISTRIB_REVISION_VALUE="R$(date +%y.%m.%d)"
 DISTRIB_DESCRIPTION_VALUE="OpenWrt"
 
 # Set font color
@@ -137,6 +138,7 @@ init_var() {
     [[ -n "${KERNEL_REPO_URL}" ]] || KERNEL_REPO_URL="${KERNEL_REPO_URL_VALUE}"
     [[ -n "${PACKAGE_SOC}" ]] || PACKAGE_SOC="${PACKAGE_SOC_VALUE}"
     [[ -n "${KERNEL_AUTO_LATEST}" ]] || KERNEL_AUTO_LATEST="${KERNEL_AUTO_LATEST_VALUE}"
+    [[ -n "${KERNEL_USAGE}" ]] || KERNEL_USAGE="${KERNEL_USAGE_VALUE}"
     [[ -n "${GZIP_IMGS}" ]] || GZIP_IMGS="${GZIP_IMGS_VALUE}"
     [[ -n "${SELECT_PACKITPATH}" ]] || SELECT_PACKITPATH="${SELECT_PACKITPATH_VALUE}"
     [[ -n "${SELECT_OUTPUTPATH}" ]] || SELECT_OUTPUTPATH="${SELECT_OUTPUTPATH_VALUE}"
@@ -228,7 +230,7 @@ init_var() {
         elif [[ " ${PACKAGE_OPENWRT_RK35XX[@]} " =~ " ${kt} " ]]; then
             KERNEL_TAGS_TMP+=("rk35xx")
         else
-            KERNEL_TAGS_TMP+=("stable")
+            KERNEL_TAGS_TMP+=(${KERNEL_USAGE})
         fi
     done
     # Remove duplicate kernel tags
@@ -239,12 +241,12 @@ init_var() {
     echo -e "${INFO} Kernel tags: [ $(echo ${KERNEL_TAGS[@]} | xargs) ]"
 
     # Reset STABLE_KERNEL options
-    [[ -n "${KERNEL_VERSION_NAME}" && " ${KERNEL_TAGS[@]} " =~ " stable " ]] && {
+    [[ -n "${KERNEL_VERSION_NAME}" && " ${KERNEL_TAGS[@]} " =~ " ${KERNEL_USAGE} " ]] && {
         oldIFS="${IFS}"
         IFS="_"
         STABLE_KERNEL=(${KERNEL_VERSION_NAME})
         IFS="${oldIFS}"
-        echo -e "${INFO} Stable kernel: [ $(echo ${STABLE_KERNEL[@]} | xargs) ]"
+        echo -e "${INFO} ${KERNEL_USAGE} kernel: [ $(echo ${STABLE_KERNEL[@]} | xargs) ]"
     }
 
     # Convert kernel library address to api format
@@ -371,7 +373,7 @@ query_kernel() {
                 echo -e "${INFO} The latest version of the rk35xx kernel: [ ${RK35XX_KERNEL[@]} ]"
             else
                 STABLE_KERNEL=(${TMP_ARR_KERNELS[@]})
-                echo -e "${INFO} The latest version of the stable kernel: [ ${STABLE_KERNEL[@]} ]"
+                echo -e "${INFO} The latest version of the ${KERNEL_USAGE} kernel: [ ${STABLE_KERNEL[@]} ]"
             fi
 
             let x++
@@ -469,7 +471,7 @@ make_openwrt() {
                 vb="rk35xx"
             else
                 build_kernel=(${STABLE_KERNEL[@]})
-                vb="stable"
+                vb=${KERNEL_USAGE}
             fi
 
             k="1"
