@@ -29,7 +29,7 @@ PACKAGE_FILE="openwrt-armsr-armv8-generic-rootfs.tar.gz"
 SELECT_PACKITPATH_VALUE="openwrt_packit"
 SELECT_OUTPUTPATH_VALUE="output"
 GZIP_IMGS_VALUE="auto"
-SAVE_OPENWRT_ROOTFS_VALUE="true"
+SAVE_OPENWRT_ROOTFS_VALUE="false"
 
 # Set the list of supported device
 PACKAGE_OPENWRT=(
@@ -56,7 +56,7 @@ PACKAGE_OPENWRT_6XY=("cm3" "e25" "photonicat" "r66s" "r68s" "rk3399")
 PACKAGE_SOC_VALUE="all"
 
 # Set the default packaged kernel download repository: https://github.com/breakingbadboy/OpenWrt/releases
-KERNEL_REPO_URL_VALUE="breakingbadboy/OpenWrt"
+KERNEL_REPO_URL_VALUE="ophub/kernel"
 # Set kernel tag: kernel_stable, kernel_rk3588, kernel_rk35xx
 KERNEL_TAGS=("stable" "rk3588" "rk35xx")
 STABLE_KERNEL=("6.1.y" "6.12.y")
@@ -111,14 +111,12 @@ SCRIPT_ZCUBE1MAX_FILE="mk_rk3399_zcube1-max.sh"
 
 # Set make.env related parameters
 WHOAMI_VALUE="flippy"
-OPENWRT_VER_VALUE="auto"
+OPENWRT_VER_VALUE="R$(date +%y.%-m.%-d)"
 SW_FLOWOFFLOAD_VALUE="1"
 HW_FLOWOFFLOAD_VALUE="0"
 SFE_FLOW_VALUE="1"
 ENABLE_WIFI_K504_VALUE="1"
 ENABLE_WIFI_K510_VALUE="1"
-DISTRIB_REVISION_VALUE="R$(date +%Y.%m.%d)"
-DISTRIB_DESCRIPTION_VALUE="OpenWrt"
 
 # Set font color
 STEPS="[\033[95m STEPS \033[0m]"
@@ -212,8 +210,6 @@ init_var() {
     SFE_FLOW="${SFE_FLOW:-${SFE_FLOW_VALUE}}"
     ENABLE_WIFI_K504="${ENABLE_WIFI_K504:-${ENABLE_WIFI_K504_VALUE}}"
     ENABLE_WIFI_K510="${ENABLE_WIFI_K510:-${ENABLE_WIFI_K510_VALUE}}"
-    DISTRIB_REVISION="${DISTRIB_REVISION:-${DISTRIB_REVISION_VALUE}}"
-    DISTRIB_DESCRIPTION="${DISTRIB_DESCRIPTION:-${DISTRIB_DESCRIPTION_VALUE}}"
     OPENWRT_IP="${OPENWRT_IP:-${OPENWRT_IP_DEFAULT_VALUE}}"
     [[ ! "${OPENWRT_IP}" =~ ${IP_REGEX} ]] && OPENWRT_IP="${OPENWRT_IP_DEFAULT_VALUE}"
 
@@ -585,8 +581,6 @@ HW_FLOWOFFLOAD="${HW_FLOWOFFLOAD}"
 SFE_FLOW="${SFE_FLOW}"
 ENABLE_WIFI_K504="${ENABLE_WIFI_K504}"
 ENABLE_WIFI_K510="${ENABLE_WIFI_K510}"
-DISTRIB_REVISION="${DISTRIB_REVISION}"
-DISTRIB_DESCRIPTION="${DISTRIB_DESCRIPTION}"
 EOF
 
                     #echo -e "${INFO} make.env file info:"
